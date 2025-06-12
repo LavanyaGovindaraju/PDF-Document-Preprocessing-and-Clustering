@@ -2,19 +2,12 @@
 
 ## Overview
 
-This suite contains three main tasks related to PDF document processing:
-
-1. **PDF Page Rotation Angle Detection**: Detects the rotation angle of each page in a PDF document.
-2. **PDF Page Classification**: Classifies each page of a PDF document into predefined categories.
-3. **PDF Document Partitioning**: Partitions a PDF document into sections based on content.
+A modular suite for intelligent PDF document processing, including automatic rotation correction, page-level classification, and content-aware partitioning. This toolkit is ideal for digitization workflows, archival analysis, and downstream automation pipelines.
 
 ## Table of Contents
 
 1. [Installation](#installation)
-2. [Usage](#usage)
-    - [Task 1: PDF Page Rotation Angle Detection](#task-1-pdf-page-rotation-angle-detection)
-    - [Task 2: PDF Page Classification](#task-2-pdf-page-classification)
-    - [Task 3: PDF Document Partitioning](#task-3-pdf-document-partitioning)
+2. [Capabilities & Workflow](#-capabilities--workflow)
 3. [License](#license)
 
 ## Installation
@@ -33,7 +26,7 @@ To install the necessary dependencies for running the projects, follow these ste
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
 
-3. Install the required packages:
+3. Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
@@ -51,56 +44,43 @@ To install the necessary dependencies for running the projects, follow these ste
         sudo apt-get install tesseract-ocr
         ```
 
-## Usage
+## Capabilities & Workflow
 
-### Task 1: PDF Page Rotation Angle Detection
+### Rotation Correction
 
-This task involves detecting the rotation angle of each page in a PDF document.
+This module identifies and normalizes the orientation of each page in a PDF document. It uses a combination of:
 
-1. **Notebook**: `Task1 - PDF Page Rotation Angle Detection.ipynb`
-2. **Description**: The notebook processes each page of the PDF and identifies its rotation angle.
-3. **Methods**:
-    - **Library Imports**: Required libraries include PyMuPDF for PDF handling, PIL for image processing, NumPy for numerical operations, and scikit-learn for PCA.
-    - **Text Analysis**: Analyze text blocks to identify headers, footers, and watermarks.
-    - **OCR and PCA**: Use Tesseract OCR and PCA to determine the rotation angle if text analysis is insufficient.
-    - **Normalization**: Normalize the rotation angle to be within the range [0, 359] degrees.
+1. **Text block analysis** to detect headers, footers, and layout symmetry
 
-### Task 2: PDF Page Classification
+2. **Tesseract OCR** and **PCA** when textual cues are insufficient
 
-This task involves classifying each page of a PDF document into predefined categories.
+**Output**: Rotation angles normalized to [0, 359] degrees per page
 
-1. **Notebook**: `Task 2 - Classify PDF Pages.ipynb`
-2. **Description**: The notebook analyzes each page of a PDF document and classifies them as:
-    - Machine-readable
-    - Non-machine readable but OCR-able
-    - Non-machine readable and not OCR-able
-3. **Methods**:
-    - **Library Imports**: Required libraries include PyMuPDF for PDF handling, PyPDF2 for reading PDF files, pytesseract for OCR, and PIL for image handling.
-    - **Loading PDF**: Load the PDF document using `fitz.open()` and `PdfReader()`.
-    - **Classify Pages**: Each page is processed to determine if it contains machine-readable text, can be OCR-processed, or is not OCR-able:
-        - **Machine-readable**: Pages with extractable text.
-        - **OCR-able**: Pages without machine-readable text but contain text recognizable by OCR.
-        - **Not OCR-able**: Pages where both machine-readable text extraction and OCR fail.
-    - **OCR Processing**: Use Tesseract to extract text from page images if machine-readable text is not found.
+### Page-Level Classification
 
-### Task 3: PDF Document Partitioning
+Each PDF page is analyzed and classified into one of three categories:
 
-This task involves partitioning a PDF document into sections based on content.
+1. **Machine-readable**: Extractable text is detected directly
 
-1. **Notebook**: `Cherry on the Cake Task -PDF Document Partitioning.ipynb`
-2. **Description**: The notebook partitions the document into different sections.
-3. **Methods**:
-    - **Library Imports**: Required libraries include PyMuPDF for PDF handling, NumPy for numerical operations, scikit-learn for clustering, TfidfVectorizer for text feature extraction, and PIL for image processing.
-    - **Extract Features**: Extract visual features such as color, text, and layout complexity from each page.
-    - **Text Feature Extraction**: Use TfidfVectorizer to convert text features (header, footer, watermark text) into numerical vectors.
-    - **Clustering for Partitioning**: Use KMeans clustering to partition the document based on content similarity.
-    - **Save Features**: Save the features of each page to a CSV file.
-    - **Determine Optimal Clusters**: Use the Elbow Method and silhouette scores to determine the optimal number of clusters.
+2. **OCR-compatible**: No extractable text, but recoverable via OCR
 
+3. **Unprocessable**: Neither extractable nor OCR-detectable content
 
+This classification enables adaptive processing strategies for mixed-content PDFs.
+
+### Content-Based Partitioning
+
+The final module segments the document into coherent sections based on visual and textual patterns:
+
+1. Extracts **features** like layout complexity, font density, headers, and watermarks
+   
+2. Converts page-level text into **TF-IDF vectors**
+   
+3. Uses **KMeans clustering** to group similar pages
+   
+4. Determines optimal cluster count using **elbow method** and **silhouette analysis**
+   
+**Output**: Cluster assignments and a summary CSV of page features
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
-
